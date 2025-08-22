@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A to Z Packers & Movers – Tracking</title>
+<style>
+  :root{
+    --brand:#0f766e; --brand2:#14b8a6;
+    --bg:#f6f7fb; --card:#fff; --text:#0f172a; --muted:#475569;
+    --ok:#16a34a; --warn:#f59e0b; --danger:#dc2626;
+    --r:18px; --shadow:0 6px 22px rgba(2,12,27,.08)
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+  header{position:sticky;top:0;z-index:5;background:linear-gradient(90deg,var(--brand),var(--brand2));color:#fff;box-shadow:var(--shadow)}
+  .nav{max-width:1000px;margin:0 auto;padding:14px 12px;display:flex;gap:12px;align-items:center}
+  .logo{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#fff;color:var(--brand);font-weight:800}
+  .grow{flex:1}
+  .btn,button,input,select,textarea{font-size:16px}
+  .btn{border:0;border-radius:12px;padding:10px 14px;background:#0ea5a4;color:#fff;cursor:pointer}
+  .btn.ghost{background:#eef2f7;color:var(--text);border:1px solid #e5e7eb}
+  .wrap{max-width:1000px;margin:18px auto;padding:0 12px}
+  .card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:16px;margin-bottom:16px}
+  h1,h2{margin:0 0 8px}
+  .muted{color:var(--muted);font-size:.95rem}
+  .grid{display:grid;gap:10px}
+  @media(min-width:760px){.grid.two{grid-template-columns:1fr 1fr}}
+  input,select,textarea{width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:12px;background:#fff}
+  textarea{min-height:84px;resize:vertical}
+  .hidden{display:none!important}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .right{margin-left:auto}
+  .badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#f1f5f9;font-weight:700;font-size:12px;letter-spacing:.3px}
+  .table{width:100%;border-collapse:collapse}
+  .table th,.table td{padding:10px;border-bottom:1px solid #e5e7eb;text-align:left;vertical-align:top}
+  .timeline{position:relative;margin-top:6px;padding-left:18px}
+  .timeline:before{content:"";position:absolute;left:6px;top:0;bottom:0;width:3px;background:#e2e8f0}
+  .t{position:relative;padding:10px 6px}
+  .t:before{content:"";position:absolute;left:-12px;top:16px;width:12px;height:12px;background:#fff;border:3px solid var(--brand2);border-radius:50%}
+  .t .title{font-weight:700}
+  .t .note{color:var(--muted)}
+  .copy{font-size:12px;color:#64748b;text-align:center;margin-top:6px}
+  .pill{padding:6px 10px;border-radius:999px;background:#ecfeff;color:#0e7490;font-weight:600;font-size:13px}
+  a.link{color:#0ea5a4}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="logo">A·Z</div>
+    <div>
+      <div style="font-weight:800">A to Z Packers & Movers</div>
+      <div style="font-size:13px;opacity:.9">Shipment Tracking • Odisha</div>
+    </div>
+    <div class="grow"></div>
+    <button id="btnToAdmin" class="btn ghost" title="Admin login">Admin</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- CUSTOMER TRACK -->
+  <section id="viewTrack" class="card">
+    <h2>Track Your Shipment</h2>
+    <div class="muted">Enter your ID to see current status & history.</div>
+    <div class="grid two" style="margin-top:10px">
+      <input id="trackId" placeholder="Enter Tracking ID e.g. AZ-10001">
+      <button id="btnTrack" class="btn">Track Now</button>
+    </div>
+    <div id="trackArea" class="hidden" style="margin-top:12px"></div>
+  </section>
+
+  <!-- ADMIN LOGIN -->
+  <section id="viewLogin" class="card hidden" style="max-width:440px;margin-inline:auto">
+    <h2>Admin Login</h2>
+    <div class="muted">Authorized personnel only.</div>
+    <div class="grid two" style="margin-top:10px">
+      <input id="loginId" placeholder="Login ID">
+      <input id="loginPw" placeholder="Password" type="password">
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button id="btnLogin" class="btn">Login</button>
+      <button id="btnBackHome" class="btn ghost">Back</button>
+      <span class="muted right" style="font-size:13px">Default: <b>admin</b> / <b>AZ@2025</b></span>
+    </div>
+    <div id="loginMsg" class="muted" style="margin-top:8px"></div>
+  </section>
+
+  <!-- ADMIN PANEL -->
+  <section id="viewAdmin" class="hidden">
+    <!-- Top bar -->
+    <div class="card row">
+      <span class="pill">Admin Mode</span>
+      <div class="muted">Changes auto-save in this browser.</div>
+      <button id="btnNew" class="btn right">+ New Shipment</button>
+      <button id="btnLogout" class="btn ghost">Logout</button>
+    </div>
+
+    <!-- Create / Edit form -->
+    <div id="formCard" class="card hidden">
+      <h2 id="formTitle">New Shipment</h2>
+      <div class="grid two" style="margin-top:6px">
+        <input id="fTrackingId" placeholder="Tracking ID (auto)" disabled>
+        <input id="fDate" type="date" placeholder="Booking Date">
+        <input id="fCustName" placeholder="Customer Name">
+        <input id="fCustPhone" placeholder="Customer Phone (WhatsApp)">
+        <input id="fFrom" placeholder="From Location">
+        <input id="fTo" placeholder="To Location">
+        <input id="fExpected" type="date" placeholder="Expected Delivery Date">
+        <input id="fItems" type="number" min="0" placeholder="Total Number of Items">
+        <input id="fService" placeholder="Service Type (Household/Office/etc.)">
+        <input id="fDriverName" placeholder="Driver Name">
+        <input id="fDriverPhone" placeholder="Driver Phone">
+        <input id="fVehicleNo" placeholder="Vehicle Number">
+      </div>
+      <textarea id="fNote" placeholder="Special instructions (optional)"></textarea>
+
+      <h3 style="margin-top:14px">Status Update</h3>
+      <div class="grid two">
+        <select id="fStatus">
+          <option>Booking</option>
+          <option>Picked Up</option>
+          <option>Transit</option>
+          <option>Destination In</option>
+          <option>Destination Out</option>
+          <option>Out for Delivery</option>
+          <option>Delivered</option>
+        </select>
+        <input id="fStatusNote" placeholder="Note (use for Destination In/Out location etc.)">
+      </div>
+
+      <div class="row" style="margin-top:10px">
+        <button id="btnSave" class="btn">Save</button>
+        <button id="btnCancel" class="btn ghost">Cancel</button>
+        <button id="btnDelete" class="btn ghost" style="margin-left:auto;background:#fee2e2;color:#7f1d1d;border:1px solid #fecaca">Delete</button>
+      </div>
+
+      <div class="copy">After saving, you can send a clean WhatsApp update from the table below.</div>
+    </div>
+
+    <!-- Table -->
+    <div class="card">
+      <div class="row">
+        <h2 style="margin:0">Shipments</h2>
+        <input id="q" class="right" placeholder="Search by ID / customer / phone / location" style="max-width:360px">
+      </div>
+      <div style="overflow:auto">
+        <table class="table" id="tbl"></table>
+      </div>
+      <div class="copy">Tip: Click an ID to open the public tracking view with that ID pre-filled.</div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap" style="padding:20px 12px 40px">
+  <div class="copy">© A to Z Packers & Movers • WhatsApp: <a class="link" href="https://wa.me/919338888550" target="_blank">+91 9338888550</a></div>
+</footer>
+
+<script>
+/* ========= Utilities ========= */
+const $ = sel => document.querySelector(sel);
+const nowIST = () => {
+  const d = new Date();
+  // Format dd Mon YYYY, HH:MM IST
+  return d.toLocaleString('en-IN',{hour12:false,timeZone:'Asia/Kolkata'});
+};
+const uid = () => 'AZ-' + (10000 + Math.floor(Math.random()*90000));
+
+const LS_KEY = 'az_shipments';
+const ADMIN_KEY = 'az_admin'; // true/false
+
+const load = () => JSON.parse(localStorage.getItem(LS_KEY) || '[]');
+const save = (rows) => localStorage.setItem(LS_KEY, JSON.stringify(rows));
+
+const findById = (id) => load().find(r => r.trackingId === id);
+
+/* ========= Routing (simple) ========= */
+function show(id){
+  ['viewTrack','viewLogin','viewAdmin'].forEach(v=>$('#'+v).classList.add('hidden'));
+  $('#'+id).classList.remove('hidden');
+}
+function toAdmin(){
+  if(localStorage.getItem(ADMIN_KEY)==='true'){ renderAdmin(); show('viewAdmin'); }
+  else { show('viewLogin'); }
+}
+
+/* ========= Customer Tracking ========= */
+function renderTrackResult(rec){
+  const area = $('#trackArea');
+  if(!rec){ area.classList.add('hidden'); area.innerHTML=''; return; }
+  const badge = `<span class="badge">${rec.status}</span>`;
+  let rows = `
+    <div class="card">
+      <div class="row"><h3 style="margin:0">${rec.trackingId}</h3> ${badge}</div>
+      <div class="grid two">
+        <div><b>Customer:</b> ${rec.customerName || '-'}</div>
+        <div><b>Phone:</b> ${rec.customerPhone || '-'}</div>
+        <div><b>From:</b> ${rec.from || '-'}</div>
+        <div><b>To:</b> ${rec.to || '-'}</div>
+        <div><b>Expected Delivery:</b> ${rec.expectedDelivery || '-'}</div>
+        <div><b>Total Items:</b> ${rec.totalItems || '-'}</div>
+        <div><b>Driver:</b> ${rec.driverName || '-'}</div>
+        <div><b>Vehicle:</b> ${rec.vehicleNo || '-'}</div>
+      </div>
+      ${rec.note ? `<div style="margin-top:6px"><b>Instructions:</b> ${rec.note}</div>`:''}
+      <h3 style="margin-top:14px">Status Timeline</h3>
+      <div class="timeline">
+        ${rec.timeline.map(t => `
+          <div class="t">
+            <div class="title">${t.status}</div>
+            <div class="muted">${t.time}</div>
+            ${t.note ? `<div class="note">📍 ${t.note}</div>`:''}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+  area.innerHTML = rows;
+  area.classList.remove('hidden');
+}
+
+$('#btnTrack').addEventListener('click', ()=>{
+  const id = $('#trackId').value.trim();
+  const rec = findById(id);
+  if(!rec){ renderTrackResult(null); alert('Tracking ID not found'); return; }
+  renderTrackResult(rec);
+});
+
+const prefill = new URLSearchParams(location.search).get('id');
+if(prefill){ $('#trackId').value = prefill; const rec=findById(prefill); if(rec) renderTrackResult(rec); }
+
+/* ========= Admin Login ========= */
+$('#btnToAdmin').addEventListener('click', toAdmin);
+$('#btnBackHome').addEventListener('click', ()=>show('viewTrack'));
+
+$('#btnLogin').addEventListener('click', ()=>{
+  const id = $('#loginId').value.trim();
+  const pw = $('#loginPw').value.trim();
+  if(id==='admin' && pw==='AZ@2025'){
+    localStorage.setItem(ADMIN_KEY,'true');
+    $('#loginMsg').textContent='✅ Logged in.';
+    renderAdmin(); show('viewAdmin');
+  }else{
+    $('#loginMsg').textContent='❌ Invalid ID or password';
+  }
+});
+$('#btnLogout').addEventListener('click', ()=>{
+  localStorage.removeItem(ADMIN_KEY); show('viewTrack');
+});
+
+/* ========= Admin Panel ========= */
+let editingId = null;
+
+function clearForm(){
+  editingId = null;
+  $('#formTitle').textContent = 'New Shipment';
+  $('#fTrackingId').value = uid();
+  $('#fDate').value = '';
+  $('#fCustName').value = '';
+  $('#fCustPhone').value = '';
+  $('#fFrom').value = '';
+  $('#fTo').value = '';
+  $('#fExpected').value = '';
+  $('#fItems').value = '';
+  $('#fService').value = '';
+  $('#fDriverName').value = '';
+  $('#fDriverPhone').value = '';
+  $('#fVehicleNo').value = '';
+  $('#fNote').value = '';
+  $('#fStatus').value = 'Booking';
+  $('#fStatusNote').value = '';
+  $('#btnDelete').classList.add('hidden');
+}
+
+$('#btnNew').addEventListener('click', ()=>{
+  clearForm();
+  $('#formCard').classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+$('#btnCancel').addEventListener('click', ()=>$('#formCard').classList.add('hidden'));
+
+$('#btnSave').addEventListener('click', ()=>{
+  const rec = {
+    trackingId: $('#fTrackingId').value.trim() || uid(),
+    bookingDate: $('#fDate').value || '',
+    customerName: $('#fCustName').value.trim(),
+    customerPhone: $('#fCustPhone').value.trim(),
+    from: $('#fFrom').value.trim(),
+    to: $('#fTo').value.trim(),
+    expectedDelivery: $('#fExpected').value || '',
+    totalItems: $('#fItems').value || '',
+    serviceType: $('#fService').value.trim(),
+    driverName: $('#fDriverName').value.trim(),
+    driverPhone: $('#fDriverPhone').value.trim(),
+    vehicleNo: $('#fVehicleNo').value.trim(),
+    note: $('#fNote').value.trim(),
+    status: $('#fStatus').value,
+    timeline: []
+  };
+  let rows = load();
+  // If editing, keep old timeline and append new status; else start fresh
+  if(editingId){
+    const idx = rows.findIndex(r=>r.trackingId===editingId);
+    if(idx>-1){
+      rec.timeline = rows[idx].timeline || [];
+      // Only push when status changed or note provided
+      rec.timeline.push({status: $('#fStatus').value, time: nowIST(), note: $('#fStatusNote').value.trim()});
+      rows[idx] = {...rows[idx], ...rec};
+    }
+  }else{
+    rec.timeline.push({status:'Booking', time: nowIST(), note: $('#fStatusNote').value.trim()});
+    rows.push(rec);
+  }
+  save(rows);
+  $('#formCard').classList.add('hidden');
+  renderAdmin();
+  alert('Saved.');
+});
+
+$('#btnDelete').addEventListener('click', ()=>{
+  if(!editingId) return;
+  if(!confirm('Delete this shipment?')) return;
+  const rows = load().filter(r=>r.trackingId!==editingId);
+  save(rows);
+  $('#formCard').classList.add('hidden');
+  renderAdmin();
+});
+
+$('#q').addEventListener('input', renderAdmin);
+
+function renderAdmin(){
+  const tbl = $('#tbl');
+  let rows = load();
+  const q = $('#q').value?.toLowerCase().trim();
+  if(q){
+    rows = rows.filter(r =>
+      (r.trackingId||'').toLowerCase().includes(q) ||
+      (r.customerName||'').toLowerCase().includes(q) ||
+      (r.customerPhone||'').toLowerCase().includes(q) ||
+      (r.from||'').toLowerCase().includes(q) ||
+      (r.to||'').toLowerCase().includes(q)
+    );
+  }
+  if(!rows.length){
+    tbl.innerHTML = `<tr><td>No records yet. Click “+ New Shipment”.</td></tr>`;
+    return;
+  }
+  tbl.innerHTML = `
+    <thead>
+      <tr>
+        <th>Tracking ID</th>
+        <th>Customer</th>
+        <th>Route</th>
+        <th>Status</th>
+        <th>Expected</th>
+        <th>Items</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rows.map(r=>`
+        <tr>
+          <td><a class="link" href="?id=${encodeURIComponent(r.trackingId)}" target="_self">${r.trackingId}</a></td>
+          <td>${r.customerName || '-'}<br><span class="muted">${r.customerPhone || ''}</span></td>
+          <td>${r.from || '-'} → ${r.to || '-'}</td>
+          <td><span class="badge">${r.status}</span></td>
+          <td>${r.expectedDelivery || '-'}</td>
+          <td>${r.totalItems || '-'}</td>
+          <td class="row">
+            <button class="btn ghost" onclick="editRec('${r.trackingId}')">Edit</button>
+            <a class="btn" target="_blank" href="${waLink(r)}">WhatsApp</a>
+          </td>
+        </tr>
+      `).join('')}
+    </tbody>`;
+}
+
+window.editRec = (id)=>{
+  const r = findById(id); if(!r) return;
+  editingId = id;
+  $('#formTitle').textContent = 'Edit Shipment';
+  $('#fTrackingId').value = r.trackingId;
+  $('#fDate').value = r.bookingDate || '';
+  $('#fCustName').value = r.customerName || '';
+  $('#fCustPhone').value = r.customerPhone || '';
+  $('#fFrom').value = r.from || '';
+  $('#fTo').value = r.to || '';
+  $('#fExpected').value = r.expectedDelivery || '';
+  $('#fItems').value = r.totalItems || '';
+  $('#fService').value = r.serviceType || '';
+  $('#fDriverName').value = r.driverName || '';
+  $('#fDriverPhone').value = r.driverPhone || '';
+  $('#fVehicleNo').value = r.vehicleNo || '';
+  $('#fNote').value = r.note || '';
+  $('#fStatus').value = r.status || 'Booking';
+  $('#fStatusNote').value = '';
+  $('#btnDelete').classList.remove('hidden');
+  $('#formCard').classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
+};
+
+/* ========= WhatsApp Message Builder (clean formatting) ========= */
+function waLink(r){
+  const latest = (r.timeline||[])[(r.timeline||[]).length-1] || {};
+  const ETA = r.expectedDelivery ? `\n⏰ Expected Delivery: ${r.expectedDelivery}` : '';
+  const ITEMS = r.totalItems ? `\n📦 Total Items: ${r.totalItems}` : '';
+  const destNote = latest.note ? `\n📍 Note: ${latest.note}` : '';
+  const msg =
+`✅ A to Z Packers & Movers
+Tracking ID: ${r.trackingId}
+
+Current Status: ${r.status}${destNote}
+Route: ${r.from} → ${r.to}${ETA}${ITEMS}
+
+Driver: ${r.driverName || '-'} (${r.driverPhone || '-'})
+Vehicle: ${r.vehicleNo || '-'}
+
+View status anytime: (open the tracking page and enter your ID)
+
+Thank you for choosing us! 🙏`;
+  const num = (r.customerPhone||'').replace(/\D/g,''); // sanitize
+  return `https://wa.me/91${num.startsWith('91')?num.slice(2):num}?text=${encodeURIComponent(msg)}`;
+}
+
+/* ========= Init ========= */
+(function init(){
+  show('viewTrack');
+  if(localStorage.getItem(ADMIN_KEY)==='true'){ renderAdmin(); }
+})();
+</script>
+</body>
+</html>
