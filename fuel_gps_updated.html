@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>A to Z Packers & Movers — Fuel Consumption Entry & Reporting</title>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --olive:#556B2F; --blue:#1E88E5; --black:#0f172a; --red:#D32F2F; --yellow:#FBC02D; --green:#2E7D32;
+    --card:#ffffff; --muted:#64748b; --shadow:0 8px 22px rgba(0,0,0,.10); --blueShadow:0 16px 40px rgba(30,136,229,.28);
+    --radius:16px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#fff;color:var(--black)}
+  header{background:linear-gradient(90deg,var(--olive),var(--blue));color:#fff;padding:18px 14px;text-align:center;position:sticky;top:0;z-index:10}
+  header h1{font-size:1.25rem;margin:0 0 6px;font-weight:900}
+  .wrap{max-width:1024px;margin:22px auto;padding:0 14px}
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:16px;border:1px solid #eef2f7;transition:transform .12s,box-shadow .18s,border-color .18s}
+  .card.fuel{box-shadow:var(--blueShadow);border-color:#cfe3fb}
+  .card.fuel:focus-within{transform:scale(1.01);box-shadow:0 24px 64px rgba(30,136,229,.35)}
+  .grid{display:grid;gap:12px}
+  @media(min-width:720px){.grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  label{font-weight:900;font-size:.95rem;display:block;margin-bottom:6px}
+  input,select{width:100%;padding:12px;border-radius:12px;border:1px solid #d6deea;outline:none;font-size:1rem;background:#fff;font-weight:700;transition:transform .08s,box-shadow .12s,border-color .12s}
+  input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(30,136,229,.15)}
+  input:disabled,select:disabled{background:#f1f5f9;color:#9aa4b2}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+  button{border:0;padding:12px 16px;border-radius:12px;color:#fff;font-weight:900;cursor:pointer;box-shadow:var(--shadow);transition:transform .05s,filter .15s,opacity .12s}
+  button:active{transform:translateY(1px)} button:disabled{opacity:.55;cursor:not-allowed}
+  .btn-olive{background:var(--olive)} .btn-blue{background:var(--blue)} .btn-red{background:var(--red)}
+  .btn-yellow{background:var(--yellow);color:#111} .btn-black{background:#111} .btn-outline{background:#fff;color:#111;border:2px solid #111}
+  .muted{color:var(--muted);font-size:.9rem} .tiny{padding:6px 8px;border-radius:10px;font-size:.85rem}
+  .chip{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;font-weight:800;background:#eef2ff;color:#1e40af;border:1px solid #c7d2fe}
+  .total-box{background:#e8f5e9;border:2px solid var(--green);color:#0b4211;border-radius:18px;padding:16px;font-weight:900;font-size:1.05rem;display:grid;gap:6px}
+  .total-box .title{font-size:1.05rem;letter-spacing:.2px;color:var(--green)}
+  .thumb{margin-left:6px;font-size:1.2rem;display:none}.thumb.show{display:inline}
+  table{width:100%;border-collapse:collapse;font-size:.95rem} th,td{padding:10px 8px;border-bottom:1px solid #eef2f6;text-align:left}
+  th{background:#f8fafc;font-size:.86rem;color:#0f172a}
+  .row-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .sideBox{background:#eef6ff;border:2px dashed #9cc3ff;padding:12px;border-radius:12px;font-weight:800;color:#0b3a70}
+  .toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#1b5e20;color:#fff;padding:10px 14px;border-radius:999px;box-shadow:var(--shadow);display:none;z-index:60}
+  .banner{background:#fff8e1;border:1px dashed #f6c453;color:#7a5a00;border-radius:12px;padding:10px 12px;margin-bottom:12px;font-weight:800}
+  .inline{display:inline-flex;gap:8px;align-items:center}
+  .w100{width:100%}
+  .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,.5);display:none;align-items:center;justify-content:center;z-index:50}
+  .modal{background:#fff;border-radius:16px;max-width:720px;width:min(96vw,720px);padding:18px;box-shadow:0 24px 84px rgba(0,0,0,.35);border:1px solid #eef2f7}
+  .modal .x{float:right;border:0;background:#111;color:#fff;border-radius:10px;padding:6px 10px;cursor:pointer}
+</style>
+</head>
+<body>
+  <header>
+    <h1>Fuel Consumption Entry & Reporting</h1>
+    <div class="sub">A to Z Packers & Movers • Boss WhatsApp: <strong>9338888550</strong></div>
+  </header>
+
+  <div class="wrap">
+    <!-- SETTINGS & MASTER LISTS -->
+    <section class="card">
+      <h3 style="margin:0 0 10px">Settings & Master Lists</h3>
+      <div class="grid cols-2">
+        <div>
+          <label for="boss1">Boss WhatsApp #1</label>
+          <input id="boss1" type="tel" value="+919338888550" />
+        </div>
+        <div>
+          <label for="boss2">Boss WhatsApp #2 (optional)</label>
+          <input id="boss2" type="tel" placeholder="+91XXXXXXXXXX" />
+        </div>
+
+        <div>
+          <label>Driver (select)</label>
+          <div class="inline w100">
+            <select id="driverSel" class="w100"></select>
+            <button id="addDriver" class="btn-blue tiny" title="Add new driver">+ Add</button>
+          </div>
+        </div>
+
+        <div>
+          <label>Vehicle (select)</label>
+          <div class="inline w100">
+            <select id="vehicleSel" class="w100"></select>
+            <button id="addVehicle" class="btn-olive tiny" title="Add new vehicle">+ Add</button>
+          </div>
+
+          <!-- One-time Initial Meter setter (only visible if vehicle has NO initial set) -->
+          <div class="inline" style="margin-top:8px;gap:8px">
+            <input id="initMeterInput" type="number" inputmode="numeric" placeholder="Set initial meter (one-time)" style="max-width:260px;display:none" />
+            <button id="setInitMeterBtn" class="btn-black tiny" style="display:none">Set Initial Meter (One-time)</button>
+          </div>
+          <div class="muted" style="margin-top:6px">
+            Initial meter is entered <b>once per vehicle</b>. After saving, it is locked forever; every new entry uses the previous ending meter automatically.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FUEL ENTRY -->
+    <section class="card fuel">
+      <h3 style="margin:0 0 10px">Fuel Entry</h3>
+
+      <div class="banner" id="shareSupportBanner" style="display:none">
+        Your device supports direct sharing of the stamped GPS photo + details to WhatsApp. If not, WhatsApp opens with text and the stamped image in a new tab to attach manually.
+      </div>
+
+      <!-- Mandatory GPS screenshot gate -->
+      <div class="grid cols-2" style="margin-bottom:8px;align-items:end">
+        <div class="sideBox">
+          <label for="gpsSnap">Mandatory: GPS Camera Screenshot</label>
+          <input id="gpsSnap" type="file" accept="image/*" capture="environment" />
+          <div class="inline" style="margin-top:8px">
+            <input id="gpsApprove" type="checkbox" />
+            <label for="gpsApprove">I confirm the GPS screenshot is captured clearly</label>
+          </div>
+          <div class="muted" style="margin-top:6px">Form unlocks after selecting a photo and ticking confirm.</div>
+        </div>
+        <div class="muted">Auto-attach works best on Android Chrome / iOS Safari.</div>
+      </div>
+
+      <div class="grid cols-2">
+        <div>
+          <label for="meterStart">Meter Starting Reading (auto)</label>
+          <input id="meterStart" type="number" inputmode="numeric" placeholder="Auto" disabled />
+        </div>
+        <div>
+          <label for="meterEnd">Meter Ending Reading (optional on 1st entry)</label>
+          <input id="meterEnd" type="number" inputmode="numeric" placeholder="e.g., 78522" disabled />
+        </div>
+
+        <div>
+          <label for="partyLocation">Party Location</label>
+          <input id="partyLocation" type="text" placeholder="e.g., Cuttack → Bhubaneswar" disabled />
+        </div>
+
+        <div>
+          <label for="litres">Fuel Filled (in Litres) — not used</label>
+          <input id="litres" type="number" step="0.01" inputmode="decimal" placeholder="(not used)" disabled />
+        </div>
+
+        <div>
+          <label for="pricePerLitre">Price per Litre (₹)</label>
+          <input id="pricePerLitre" type="number" step="0.01" inputmode="decimal" value="93" disabled />
+        </div>
+
+        <div>
+          <label for="mileage">Vehicle Mileage (KM:1)</label>
+          <select id="mileage" disabled></select>
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <label>Did you submit Survey Report & Material Report? <span class="chip">Optional</span></label>
+        <div class="inline" style="margin-top:6px">
+          <label><input type="radio" name="sr" value="yes" disabled> Yes <span id="thumb" class="thumb">👍</span></label>
+          <label><input type="radio" name="sr" value="no" checked disabled> No</label>
+        </div>
+      </div>
+
+      <div class="total-box" style="margin-top:14px">
+        <div class="title">✅ Total Calculation</div>
+        <div>📏 Distance Travelled: <span id="outDistance">0</span> km</div>
+        <div>🛞 Mileage Chosen: <span id="outMileage">8.0</span>:1</div>
+        <div>💲 Price/Litre (fixed): ₹<span id="outPpl">93.00</span></div>
+        <div>🧮 Consumption Amount: <span id="outConsumption">₹0.00</span></div>
+        <div style="font-size:1.25rem">⚖ Total Amount: <span id="outTotal" style="font-weight:900">₹0.00</span></div>
+      </div>
+
+      <div class="controls">
+        <button class="btn-blue" id="btnAdd" disabled>➕ Add to Session</button>
+        <button class="btn-olive" id="btnSend" disabled>📤 Send (Primary) to WhatsApp</button>
+        <button class="btn-yellow" id="btnReset" disabled>Reset</button>
+      </div>
+
+      <div id="lockNote" class="muted" style="display:none;margin-top:6px">
+        Start meter is locked to the last entry for this vehicle and cannot be edited.
+      </div>
+    </section>
+
+    <!-- SESSION LIST -->
+    <section class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3 style="margin:0">Added Records (This Session)</h3>
+        <div class="row-actions">
+          <button class="btn-olive tiny" id="btnSessionWA">📤 WhatsApp (Session → Boss #1)</button>
+          <button class="btn-blue tiny" id="btnMonthPDF">📄 Monthly PDF</button>
+        </div>
+      </div>
+      <div class="muted" style="margin:6px 0 12px">Queue multiple entries, then send/export.</div>
+      <div style="overflow:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th>Driver</th><th>Vehicle</th><th>Start</th><th>End</th><th>KM</th><th>Mileage</th><th>Consumption (₹)</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- STORED LIST -->
+    <section class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3 style="margin:0">Stored Records (All Time)</h3>
+        <div class="row-actions">
+          <button class="btn-olive tiny" id="btnStoreWA">📤 WhatsApp (to Boss #1 & #2)</button>
+          <button class="btn-blue tiny" id="btnStorePDF">📄 PDF (All Records)</button>
+        </div>
+      </div>
+      <div class="muted" style="margin:6px 0 12px">Automatically keeps all final-submitted entries.</div>
+      <div style="overflow:auto;max-height:360px">
+        <table>
+          <thead>
+            <tr><th>Date</th><th>Driver</th><th>Vehicle</th><th>Start</th><th>End</th><th>KM</th><th>Mileage</th><th>Consumption (₹)</th></tr>
+          </thead>
+          <tbody id="storeRows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <!-- FINAL MODAL -->
+  <div id="modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <button class="x" id="modalClose" aria-label="Close">×</button>
+      <h3 id="modalTitle" style="margin:0 0 8px">Fuel Filled by Boss — Final WhatsApp</h3>
+      <div class="muted" style="margin-bottom:8px">Final WhatsApp delivers the same data (text only) + two lines: Difference & New Carry.</div>
+      <div class="grid cols-2">
+        <div><label for="bossAmount">Boss Amount (₹) — fixed</label><input id="bossAmount" type="number" step="0.01" inputmode="decimal" value="3000" disabled /></div>
+        <div><label for="bossNote">Note (optional)</label><input id="bossNote" type="text" placeholder="e.g., cash / UPI" /></div>
+      </div>
+      <div class="controls" style="margin-top:12px">
+        <button class="btn-olive" id="btnFinalSend">📤 Send Final (Text Only)</button>
+        <button class="btn-red" id="btnModalClose2">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">Saved</div>
+
+<script>
+(function(){
+  /* ====================== ELEMENTS & KEYS ====================== */
+  const boss1 = document.getElementById('boss1');
+  const boss2 = document.getElementById('boss2');
+  const driverSel = document.getElementById('driverSel');
+  const vehicleSel = document.getElementById('vehicleSel');
+  const addDriverBtn = document.getElementById('addDriver');
+  const addVehicleBtn = document.getElementById('addVehicle');
+
+  const initMeterInput = document.getElementById('initMeterInput');
+  const setInitMeterBtn = document.getElementById('setInitMeterBtn');
+
+  const gpsSnap = document.getElementById('gpsSnap');
+  const gpsApprove = document.getElementById('gpsApprove');
+  const shareSupportBanner = document.getElementById('shareSupportBanner');
+
+  const meterStart = document.getElementById('meterStart');
+  const meterEnd = document.getElementById('meterEnd');
+  const partyLocation = document.getElementById('partyLocation');
+  const litres = document.getElementById('litres');
+  const pricePerLitre = document.getElementById('pricePerLitre');
+  const mileage = document.getElementById('mileage');
+
+  const thumb = document.getElementById('thumb');
+  const lockNote = document.getElementById('lockNote');
+
+  const outDistance = document.getElementById('outDistance');
+  const outMileage = document.getElementById('outMileage');
+  const outPpl = document.getElementById('outPpl');
+  const outTotal = document.getElementById('outTotal');
+  const outConsumption = document.getElementById('outConsumption');
+
+  const rows = document.getElementById('rows');
+  const btnAdd = document.getElementById('btnAdd');
+  const btnSend = document.getElementById('btnSend');
+  const btnReset = document.getElementById('btnReset');
+  const btnSessionWA = document.getElementById('btnSessionWA');
+  const btnMonthPDF = document.getElementById('btnMonthPDF');
+
+  const storeRows = document.getElementById('storeRows');
+  const btnStoreWA = document.getElementById('btnStoreWA');
+  const btnStorePDF = document.getElementById('btnStorePDF');
+
+  const modal = document.getElementById('modal');
+  const modalClose = document.getElementById('modalClose');
+  const btnModalClose2 = document.getElementById('btnModalClose2');
+  const btnFinalSend = document.getElementById('btnFinalSend');
+  const bossAmount = document.getElementById('bossAmount');
+  const bossNote = document.getElementById('bossNote');
+
+  const toast = document.getElementById('toast');
+
+  const STORAGE_PREFIX = 'az_fuel_';
+  const KEY_DRIVERS = STORAGE_PREFIX+'drivers';
+  const KEY_VEHICLES = STORAGE_PREFIX+'vehicles';
+  const KEY_STORE = STORAGE_PREFIX+'store';
+  const KEY_PENDING = v => STORAGE_PREFIX+'pending:'+v;
+  const KEY_LOCK = v => STORAGE_PREFIX+'startLock:'+v;     // next auto start meter (string)
+  const KEY_CARRY = v => STORAGE_PREFIX+'carry:'+v;        // carry-forward amount (number)
+  const KEY_INITIAL = v => STORAGE_PREFIX+'initial:'+v;    // one-time initial meter (string)
+
+  /* ====================== HELPERS ====================== */
+  const num = v => isFinite(parseFloat(v)) ? parseFloat(v) : 0;
+  const moneyNum = v => Number(v||0).toFixed(2);
+  const money = v => '₹'+moneyNum(v);
+  const normalizePhone = p => (p||'').replace(/[^\d+]/g,'');
+  const encodeWA = (n, msg) => `https://wa.me/${normalizePhone(n)}?text=${encodeURIComponent(msg)}`;
+  const normalizeVeh = v => (v||'').toUpperCase().replace(/\s+/g,' ').trim();
+  function showToast(msg='Saved'){ toast.textContent=msg; toast.style.display='block'; setTimeout(()=>toast.style.display='none',1600); }
+
+  function istNow(){
+    const d = new Date();
+    const opts = { timeZone:'Asia/Kolkata', year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false };
+    const str = new Intl.DateTimeFormat('en-GB', opts).format(d);
+    const [datePart, timePart] = str.split(',').map(s=>s.trim());
+    const [dd, mm, yyyy] = datePart.split('/');
+    return { date:`${yyyy}-${mm}-${dd}`, time:timePart };
+  }
+  const shareFilesSupported = !!(navigator.share && navigator.canShare && (()=>{ try{ const f=new File(["x"],"x.txt",{type:"text/plain"}); return navigator.canShare({files:[f]}); }catch{return false} })());
+  if(shareFilesSupported) shareSupportBanner.style.display = 'block';
+
+  // Survey emoji
+  document.addEventListener('change', (ev)=>{ if(ev.target && ev.target.name==='sr'){ thumb.classList.toggle('show', ev.target.value==='yes'); }});
+
+  // Build mileage dropdown
+  function buildMileage(){
+    mileage.innerHTML = '';
+    for(let v=8; v<=18; v+=0.5){
+      const val = Number(v.toFixed(1));
+      const o = document.createElement('option');
+      o.value = String(val); o.textContent = `${val}:1`;
+      mileage.appendChild(o);
+    }
+    mileage.value='8';
+    outMileage.textContent = '8.0';
+  }
+
+  // Masters
+  function loadList(k){ try{return JSON.parse(localStorage.getItem(k)||'[]')}catch{return []} }
+  function saveList(k,arr){ localStorage.setItem(k, JSON.stringify(arr)); }
+  function fillSelect(sel, arr){
+    sel.innerHTML=''; if(arr.length===0){const o=document.createElement('option');o.value='';o.textContent='-- Add first --';sel.appendChild(o);return;}
+    for(const v of arr){const o=document.createElement('option');o.value=v;o.textContent=v;sel.appendChild(o);}
+  }
+
+  // One-time Initial Meter UI visibility
+  function refreshInitMeterUI(){
+    const vno = normalizeVeh(vehicleSel.value);
+    const hasInit = !!localStorage.getItem(KEY_INITIAL(vno));
+    if(!vno){ initMeterInput.style.display='none'; setInitMeterBtn.style.display='none'; return; }
+    if(hasInit){ initMeterInput.style.display='none'; setInitMeterBtn.style.display='none'; }
+    else{ initMeterInput.style.display='inline-block'; setInitMeterBtn.style.display='inline-block'; }
+  }
+
+  // Add driver/vehicle with one-time initial meter
+  addDriverBtn.onclick = ()=>{
+    const name = prompt('Add Driver Name'); if(!name) return;
+    const list=loadList(KEY_DRIVERS); if(list.includes(name)){alert('Driver already exists');return;}
+    list.push(name); saveList(KEY_DRIVERS,list); fillSelect(driverSel,list); driverSel.value=name; showToast('Driver added');
+  };
+  addVehicleBtn.onclick = ()=>{
+    const v = prompt('Add Vehicle Number (e.g., OD 05 BD 8855)'); if(!v) return;
+    const veh=normalizeVeh(v); const list=loadList(KEY_VEHICLES);
+    if(list.includes(veh)){alert('Vehicle already exists');return;}
+    let init = prompt('Enter INITIAL meter reading for this vehicle (numbers only). This is one-time and locked forever.');
+    if(init===null) return;
+    init = String(init).trim();
+    if(!/^\d+(\.\d+)?$/.test(init)){ alert('Invalid initial meter reading'); return; }
+    list.push(veh); saveList(KEY_VEHICLES,list);
+    localStorage.setItem(KEY_LOCK(veh), init);     // seed start (moves later)
+    localStorage.setItem(KEY_INITIAL(veh), init);  // permanent initial
+    localStorage.setItem(KEY_CARRY(veh), '0');     // seed carry
+    fillSelect(vehicleSel,list); vehicleSel.value=veh; applyStartLockIfAny(); refreshInitMeterUI(); showToast('Vehicle added with initial meter (locked)');
+  };
+
+  // Optional late 
