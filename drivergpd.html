@@ -1,0 +1,1914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A to Z Packers & Movers - Live GPS Tracking</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=geometry,places"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 100vw;
+            margin: 0 auto;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .logo {
+            color: #667eea;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .tagline {
+            color: #666;
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: white;
+            border-radius: 15px;
+            padding: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-tab {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px 15px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: clamp(0.8rem, 2vw, 1rem);
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow-x: hidden;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #333;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-location {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+            margin-bottom: 15px;
+        }
+
+        .location-sharing {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 2px solid #e9ecef;
+        }
+
+        .location-sharing.active {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .location-input {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .location-input input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .location-input .btn {
+            width: auto;
+            margin: 0;
+            padding: 12px 20px;
+        }
+
+        .live-distance {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .distance-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .distance-card .icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .distance-card .value {
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .distance-card .label {
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+            opacity: 0.9;
+        }
+
+        .map-container {
+            height: 350px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .status-timeline {
+            display: flex;
+            justify-content: space-between;
+            margin: 25px 0;
+            position: relative;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+
+        .status-timeline::before {
+            content: '';
+            position: absolute;
+            top: 30px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e1e5e9;
+            z-index: 1;
+        }
+
+        .status-step {
+            background: white;
+            border: 3px solid #e1e5e9;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+            font-weight: bold;
+            color: #666;
+            flex-shrink: 0;
+        }
+
+        .status-step.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .status-step.completed {
+            border-color: #28a745;
+            background: #28a745;
+            color: white;
+        }
+
+        .status-label {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: clamp(0.7rem, 2vw, 0.9rem);
+            font-weight: 600;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        .trip-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .info-card .icon {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .info-card .value {
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .info-card .label {
+            color: #666;
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .tracking-link {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px solid #b3d9ff;
+        }
+
+        .tracking-link input {
+            background: white;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            width: 100%;
+            margin: 10px 0;
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+        }
+
+        .notification-panel {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .notification {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+        }
+
+        .consignment-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .consignment-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .consignment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .consignment-id {
+            font-weight: bold;
+            color: #333;
+            font-size: clamp(1rem, 2.5vw, 1.1rem);
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: clamp(0.7rem, 2vw, 0.8rem);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-started {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-enroute {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-reached {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-delivered {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .live-connection {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .connection-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #28a745;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            .container {
+                padding: 8px;
+            }
+
+            .nav-tabs {
+                padding: 5px;
+            }
+
+            .nav-tab {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+            }
+
+            .tab-content {
+                padding: 15px;
+            }
+
+            .map-container {
+                height: 280px;
+            }
+
+            .location-input {
+                flex-direction: column;
+            }
+
+            .location-input input {
+                min-width: 100%;
+            }
+
+            .button-group {
+                grid-template-columns: 1fr;
+            }
+
+            .live-distance {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .trip-info {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .status-timeline {
+                padding: 5px;
+            }
+
+            .status-step {
+                width: 35px;
+                height: 35px;
+            }
+
+            .status-label {
+                font-size: 0.7rem;
+                top: 45px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .live-distance {
+                grid-template-columns: 1fr;
+            }
+
+            .trip-info {
+                grid-template-columns: 1fr;
+            }
+
+            .consignment-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .filters {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Prevent horizontal scroll */
+        html, body {
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
+
+        * {
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-truck"></i> A to Z Packers & Movers
+            </div>
+            <div class="tagline">Live Location Sharing & GPS Tracking</div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('driver')">
+                <i class="fas fa-user-tie"></i> Driver Portal
+            </button>
+            <button class="nav-tab" onclick="showTab('customer')">
+                <i class="fas fa-user"></i> Customer Portal
+            </button>
+            <button class="nav-tab" onclick="showTab('admin')">
+                <i class="fas fa-cog"></i> Admin Dashboard
+            </button>
+        </div>
+
+        <!-- Driver Portal -->
+        <div id="driver" class="tab-content active">
+            <h2><i class="fas fa-route"></i> Driver Portal</h2>
+            
+            <div class="form-group">
+                <label>Driver Name</label>
+                <input type="text" id="driverName" placeholder="Enter your name">
+            </div>
+
+            <div class="form-group">
+                <label>Vehicle Number</label>
+                <input type="text" id="vehicleNumber" placeholder="e.g., MH12AB1234">
+            </div>
+
+            <div class="form-group">
+                <label>Starting Point</label>
+                <input type="text" id="startPoint" placeholder="Enter pickup location">
+            </div>
+
+            <div class="form-group">
+                <label>Destination</label>
+                <input type="text" id="destination" placeholder="Enter delivery location">
+            </div>
+
+            <div class="form-group">
+                <label>Customer Contact</label>
+                <input type="tel" id="customerContact" placeholder="Customer phone number">
+            </div>
+
+            <!-- Driver Location Sharing -->
+            <div class="location-sharing" id="driverLocationSharing">
+                <h3><i class="fas fa-map-marker-alt"></i> Share Your Live Location</h3>
+                <button class="btn btn-location" onclick="shareDriverLocation()">
+                    <i class="fas fa-location-arrow"></i> Share My Current Location
+                </button>
+                <div class="location-input">
+                    <input type="text" id="driverLocationLink" placeholder="Or paste your location link here" readonly>
+                    <button class="btn" onclick="copyDriverLocation()">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                </div>
+            </div>
+
+            <!-- Customer Location Input -->
+            <div class="location-sharing">
+                <h3><i class="fas fa-user-check"></i> Customer Location</h3>
+                <div class="location-input">
+                    <input type="text" id="customerLocationLink" placeholder="Paste customer's location link here">
+                    <button class="btn" onclick="connectCustomerLocation()">
+                        <i class="fas fa-link"></i> Connect
+                    </button>
+                </div>
+            </div>
+
+            <button class="btn" onclick="startTrip()">
+                <i class="fas fa-play"></i> Start Trip
+            </button>
+
+            <div id="tripDetails" style="display: none;">
+                <!-- Live Distance Display -->
+                <div class="live-distance">
+                    <div class="distance-card">
+                        <div class="icon"><i class="fas fa-route"></i></div>
+                        <div class="value" id="liveDistance">0 km</div>
+                        <div class="label">Live Distance</div>
+                    </div>
+                    <div class="distance-card">
+                        <div class="icon"><i class="fas fa-clock"></i></div>
+                        <div class="value" id="liveETA">0 min</div>
+                        <div class="label">Live ETA</div>
+                    </div>
+                    <div class="distance-card">
+                        <div class="icon"><i class="fas fa-tachometer-alt"></i></div>
+                        <div class="value" id="currentSpeed">0 km/h</div>
+                        <div class="label">Current Speed</div>
+                    </div>
+                </div>
+
+                <!-- Connection Status -->
+                <div id="connectionStatus" class="live-connection" style="display: none;">
+                    <div class="connection-status">
+                        <div class="connection-dot"></div>
+                        <span><i class="fas fa-satellite-dish"></i> Live Connected with Customer</span>
+                    </div>
+                    <div style="font-size: 0.9rem; opacity: 0.9;">Real-time location sharing active</div>
+                </div>
+
+                <div class="trip-info">
+                    <div class="info-card">
+                        <div class="icon"><i class="fas fa-route"></i></div>
+                        <div class="value" id="tripDistance">0 km</div>
+                        <div class="label">Total Distance</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="icon"><i class="fas fa-clock"></i></div>
+                        <div class="value" id="tripETA">0 min</div>
+                        <div class="label">Estimated Time</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="icon"><i class="fas fa-map-marker-alt"></i></div>
+                        <div class="value" id="currentLocation">Tracking...</div>
+                        <div class="label">Current Location</div>
+                    </div>
+                </div>
+
+                <div class="status-timeline">
+                    <div class="status-step completed" id="driverStep1">
+                        <i class="fas fa-play"></i>
+                        <div class="status-label">Started</div>
+                    </div>
+                    <div class="status-step active" id="driverStep2">
+                        <i class="fas fa-truck"></i>
+                        <div class="status-label">En Route</div>
+                    </div>
+                    <div class="status-step" id="driverStep3">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div class="status-label">Reached</div>
+                    </div>
+                    <div class="status-step" id="driverStep4">
+                        <i class="fas fa-check"></i>
+                        <div class="status-label">Delivered</div>
+                    </div>
+                </div>
+
+                <div class="map-container">
+                    <div id="driverMap" style="height: 100%; width: 100%;"></div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-success" onclick="updateStatus('reached')">
+                        <i class="fas fa-map-marker-alt"></i> Mark as Reached
+                    </button>
+                    <button class="btn btn-success" onclick="updateStatus('delivered')">
+                        <i class="fas fa-check"></i> Mark as Delivered
+                    </button>
+                    <button class="btn btn-danger" onclick="endTrip()">
+                        <i class="fas fa-stop"></i> End Trip
+                    </button>
+                </div>
+
+                <div class="tracking-link">
+                    <strong>Customer Tracking Link:</strong>
+                    <input type="text" id="trackingLink" readonly>
+                    <button class="btn" onclick="copyTrackingLink()">
+                        <i class="fas fa-copy"></i> Copy Link
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Portal -->
+        <div id="customer" class="tab-content">
+            <h2><i class="fas fa-search"></i> Customer Portal</h2>
+            
+            <!-- Customer Location Sharing -->
+            <div class="location-sharing" id="customerLocationSharing">
+                <h3><i class="fas fa-map-marker-alt"></i> Share Your Location with Driver</h3>
+                <button class="btn btn-location" onclick="shareCustomerLocation()">
+                    <i class="fas fa-location-arrow"></i> Share My Current Location
+                </button>
+                <div class="location-input">
+                    <input type="text" id="customerOwnLocationLink" placeholder="Your location link will appear here" readonly>
+                    <button class="btn" onclick="copyCustomerLocation()">
+                        <i class="fas fa-copy"></i> Copy & Send to Driver
+                    </button>
+                </div>
+                <div style="margin-top: 10px; font-size: 0.9rem; color: #666;">
+                    <i class="fas fa-info-circle"></i> Share this link with your driver for accurate pickup/delivery
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Tracking ID</label>
+                <input type="text" id="trackingId" placeholder="Enter your tracking ID">
+            </div>
+
+            <button class="btn" onclick="trackConsignment()">
+                <i class="fas fa-search"></i> Track Now
+            </button>
+
+            <div id="trackingResults" style="display: none;">
+                <!-- Live Distance for Customer -->
+                <div class="live-distance">
+                    <div class="distance-card">
+                        <div class="icon"><i class="fas fa-route"></i></div>
+                        <div class="value" id="customerLiveDistance">0 km</div>
+                        <div class="label">Distance to You</div>
+                    </div>
+                    <div class="distance-card">
+                        <div class="icon"><i class="fas fa-clock"></i></div>
+                        <div class="value" id="customerLiveETA">0 min</div>
+                        <div class="label">Arrival Time</div>
+                    </div>
+                    <div class="distance-card">
+                        <div class="icon"><i class="fas fa-tachometer-alt"></i></div>
+                        <div class="value" id="driverSpeed">0 km/h</div>
+                        <div class="label">Driver Speed</div>
+                    </div>
+                </div>
+
+                <!-- Customer Connection Status -->
+                <div id="customerConnectionStatus" class="live-connection" style="display: none;">
+                    <div class="connection-status">
+                        <div class="connection-dot"></div>
+                        <span><i class="fas fa-satellite-dish"></i> Live Connected with Driver</span>
+                    </div>
+                    <div style="font-size: 0.9rem; opacity: 0.9;">Real-time tracking active</div>
+                </div>
+
+                <div class="trip-info">
+                    <div class="info-card">
+                        <div class="icon"><i class="fas fa-truck"></i></div>
+                        <div class="value" id="customerVehicle">MH12AB1234</div>
+                        <div class="label">Vehicle Number</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="icon"><i class="fas fa-user-tie"></i></div>
+                        <div class="value" id="customerDriver">John Doe</div>
+                        <div class="label">Driver Name</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="icon"><i class="fas fa-clock"></i></div>
+                        <div class="value" id="customerETA">45 min</div>
+                        <div class="label">Original ETA</div>
+                    </div>
+                </div>
+
+                <div class="status-timeline">
+                    <div class="status-step completed">
+                        <i class="fas fa-play"></i>
+                        <div class="status-label">Picked Up</div>
+                    </div>
+                    <div class="status-step active">
+                        <i class="fas fa-truck"></i>
+                        <div class="status-label">In Transit</div>
+                    </div>
+                    <div class="status-step">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div class="status-label">Near You</div>
+                    </div>
+                    <div class="status-step">
+                        <i class="fas fa-check"></i>
+                        <div class="status-label">Delivered</div>
+                    </div>
+                </div>
+
+                <div class="map-container">
+                    <div id="customerMap" style="height: 100%; width: 100%;"></div>
+                </div>
+
+                <div class="notification-panel">
+                    <h3><i class="fas fa-bell"></i> Live Updates</h3>
+                    <div class="notification">
+                        <strong>15:30</strong> - Your driver is currently 2.5 km away from your location
+                    </div>
+                    <div class="notification">
+                        <strong>15:15</strong> - Driver has started the journey and is heading towards you
+                    </div>
+                    <div class="notification">
+                        <strong>15:00</strong> - Your consignment has been loaded and secured
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div id="admin" class="tab-content">
+            <h2><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h2>
+            
+            <div class="filters">
+                <div class="form-group">
+                    <label>Filter by Vehicle</label>
+                    <select id="vehicleFilter">
+                        <option value="">All Vehicles</option>
+                        <option value="MH12AB1234">MH12AB1234</option>
+                        <option value="MH12CD5678">MH12CD5678</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Filter by Status</label>
+                    <select id="statusFilter">
+                        <option value="">All Status</option>
+                        <option value="started">Started</option>
+                        <option value="enroute">En Route</option>
+                        <option value="reached">Reached</option>
+                        <option value="delivered">Delivered</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Search</label>
+                    <input type="text" id="searchFilter" placeholder="Search by driver, customer...">
+                </div>
+            </div>
+
+            <div class="trip-info">
+                <div class="info-card">
+                    <div class="icon"><i class="fas fa-truck"></i></div>
+                    <div class="value">12</div>
+                    <div class="label">Active Trips</div>
+                </div>
+                <div class="info-card">
+                    <div class="icon"><i class="fas fa-satellite-dish"></i></div>
+                    <div class="value">8</div>
+                    <div class="label">Live Connected</div>
+                </div>
+                <div class="info-card">
+                    <div class="icon"><i class="fas fa-check"></i></div>
+                    <div class="value">45</div>
+                    <div class="label">Completed Today</div>
+                </div>
+                <div class="info-card">
+                    <div class="icon"><i class="fas fa-route"></i></div>
+                    <div class="value">1,250 km</div>
+                    <div class="label">Total Distance</div>
+                </div>
+            </div>
+
+            <div class="consignment-list" id="consignmentList">
+                <div class="consignment-card">
+                    <div class="consignment-header">
+                        <div class="consignment-id">TRK001 - MH12AB1234</div>
+                        <div class="status-badge status-enroute">Live Connected</div>
+                    </div>
+                    <div><strong>Driver:</strong> Rajesh Kumar</div>
+                    <div><strong>Route:</strong> Mumbai → Pune</div>
+                    <div><strong>Customer:</strong> +91 98765 43210</div>
+                    <div><strong>Live Distance:</strong> 25 km remaining</div>
+                    <div><strong>ETA:</strong> 35 minutes (Live)</div>
+                    <button class="btn" style="margin-top: 10px;" onclick="viewConsignmentDetails('TRK001')">
+                        <i class="fas fa-eye"></i> View Live Details
+                    </button>
+                </div>
+
+                <div class="consignment-card">
+                    <div class="consignment-header">
+                        <div class="consignment-id">TRK002 - MH12CD5678</div>
+                        <div class="status-badge status-started">Started</div>
+                    </div>
+                    <div><strong>Driver:</strong> Suresh Patil</div>
+                    <div><strong>Route:</strong> Delhi → Jaipur</div>
+                    <div><strong>Customer:</strong> +91 87654 32109</div>
+                    <div><strong>Status:</strong> Location sharing pending</div>
+                    <button class="btn" style="margin-top: 10px;" onclick="viewConsignmentDetails('TRK002')">
+                        <i class="fas fa-eye"></i> View Details
+                    </button>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn" onclick="exportReports()">
+                    <i class="fas fa-download"></i> Export Reports
+                </button>
+                <button class="btn btn-secondary" onclick="sendBulkNotifications()">
+                    <i class="fas fa-bell"></i> Send Notifications
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTrip = null;
+        let trackingInterval = null;
+        let locationUpdateInterval = null;
+        let driverMap = null;
+        let customerMap = null;
+        let allTrips = {};
+        let driverLocation = null;
+        let customerLocation = null;
+        let isLocationConnected = false;
+
+        // Location sharing functions
+        function shareDriverLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        driverLocation = { lat, lng };
+                        
+                        // Create shareable location link
+                        const locationLink = `https://maps.google.com/?q=${lat},${lng}`;
+                        document.getElementById('driverLocationLink').value = locationLink;
+                        
+                        // Store in trip data
+                        if (currentTrip) {
+                            currentTrip.driverLocation = driverLocation;
+                            updateTripStorage();
+                        }
+                        
+                        alert('✅ Your location has been captured!\n\nShare the location link with your customer for real-time tracking.');
+                        
+                        // Start live location updates
+                        startLiveLocationUpdates();
+                    },
+                    function(error) {
+                        alert('❌ Unable to get your location. Please check your GPS settings and try again.');
+                        console.error('Geolocation error:', error);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 60000
+                    }
+                );
+            } else {
+                alert('❌ Geolocation is not supported by this browser.');
+            }
+        }
+
+        function shareCustomerLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        customerLocation = { lat, lng };
+                        
+                        // Create shareable location link
+                        const locationLink = `https://maps.google.com/?q=${lat},${lng}`;
+                        document.getElementById('customerOwnLocationLink').value = locationLink;
+                        
+                        alert('✅ Your location has been captured!\n\nCopy and send this link to your driver for accurate pickup/delivery.');
+                    },
+                    function(error) {
+                        alert('❌ Unable to get your location. Please check your GPS settings and try again.');
+                        console.error('Geolocation error:', error);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 60000
+                    }
+                );
+            } else {
+                alert('❌ Geolocation is not supported by this browser.');
+            }
+        }
+
+        function copyDriverLocation() {
+            const locationLink = document.getElementById('driverLocationLink').value;
+            if (!locationLink) {
+                alert('Please share your location first');
+                return;
+            }
+            
+            copyToClipboard(locationLink, 'Driver location link copied! Share this with your customer.');
+        }
+
+        function copyCustomerLocation() {
+            const locationLink = document.getElementById('customerOwnLocationLink').value;
+            if (!locationLink) {
+                alert('Please share your location first');
+                return;
+            }
+            
+            copyToClipboard(locationLink, 'Customer location link copied! Send this to your driver.');
+        }
+
+        function connectCustomerLocation() {
+            const customerLocationLink = document.getElementById('customerLocationLink').value.trim();
+            
+            if (!customerLocationLink) {
+                alert('Please paste the customer location link first');
+                return;
+            }
+            
+            // Extract coordinates from various location link formats
+            const coordinates = extractCoordinatesFromLink(customerLocationLink);
+            
+            if (coordinates) {
+                customerLocation = coordinates;
+                
+                // Store in trip data
+                if (currentTrip) {
+                    currentTrip.customerLocation = customerLocation;
+                    updateTripStorage();
+                }
+                
+                // Show connection status
+                isLocationConnected = true;
+                document.getElementById('connectionStatus').style.display = 'block';
+                document.getElementById('customerLocationSharing').classList.add('active');
+                
+                // Calculate and update live distance
+                if (driverLocation && customerLocation) {
+                    updateLiveDistance();
+                    startLiveLocationUpdates();
+                }
+                
+                alert('✅ Customer location connected successfully!\n\nLive distance and ETA will now update automatically.');
+            } else {
+                alert('❌ Invalid location link format. Please check the link and try again.\n\nSupported formats:\n• Google Maps links\n• Coordinates (lat,lng)\n• Location sharing links');
+            }
+        }
+
+        function extractCoordinatesFromLink(link) {
+            // Handle various location link formats
+            const patterns = [
+                // Google Maps: https://maps.google.com/?q=lat,lng
+                /[?&]q=(-?\d+\.?\d*),(-?\d+\.?\d*)/,
+                // Google Maps: https://maps.google.com/@lat,lng
+                /@(-?\d+\.?\d*),(-?\d+\.?\d*)/,
+                // Direct coordinates: lat,lng
+                /^(-?\d+\.?\d*),\s*(-?\d+\.?\d*)$/,
+                // Maps.app: https://maps.app.goo.gl/... (would need API to resolve)
+                // WhatsApp location: https://maps.google.com/?q=lat,lng
+                /maps\.google\.com.*[?&]q=(-?\d+\.?\d*),(-?\d+\.?\d*)/
+            ];
+            
+            for (let pattern of patterns) {
+                const match = link.match(pattern);
+                if (match) {
+                    const lat = parseFloat(match[1]);
+                    const lng = parseFloat(match[2]);
+                    
+                    // Validate coordinates
+                    if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+                        return { lat, lng };
+                    }
+                }
+            }
+            
+            return null;
+        }
+
+        function calculateDistance(lat1, lng1, lat2, lng2) {
+            const R = 6371; // Earth's radius in km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLng = (lng2 - lng1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                     Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                     Math.sin(dLng/2) * Math.sin(dLng/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        function updateLiveDistance() {
+            if (!driverLocation || !customerLocation) return;
+            
+            const distance = calculateDistance(
+                driverLocation.lat, driverLocation.lng,
+                customerLocation.lat, customerLocation.lng
+            );
+            
+            // Calculate ETA based on average speed (40 km/h in city, 60 km/h highway)
+            const avgSpeed = distance > 50 ? 60 : 40;
+            const eta = Math.round((distance / avgSpeed) * 60); // in minutes
+            
+            // Simulate current speed (random between 30-80 km/h)
+            const currentSpeed = Math.round(30 + Math.random() * 50);
+            
+            // Update driver portal
+            const liveDistanceEl = document.getElementById('liveDistance');
+            const liveETAEl = document.getElementById('liveETA');
+            const currentSpeedEl = document.getElementById('currentSpeed');
+            
+            if (liveDistanceEl) liveDistanceEl.textContent = distance.toFixed(1) + ' km';
+            if (liveETAEl) liveETAEl.textContent = eta + ' min';
+            if (currentSpeedEl) currentSpeedEl.textContent = currentSpeed + ' km/h';
+            
+            // Update customer portal
+            const customerLiveDistanceEl = document.getElementById('customerLiveDistance');
+            const customerLiveETAEl = document.getElementById('customerLiveETA');
+            const driverSpeedEl = document.getElementById('driverSpeed');
+            
+            if (customerLiveDistanceEl) customerLiveDistanceEl.textContent = distance.toFixed(1) + ' km';
+            if (customerLiveETAEl) customerLiveETAEl.textContent = eta + ' min';
+            if (driverSpeedEl) driverSpeedEl.textContent = currentSpeed + ' km/h';
+            
+            // Show connection status for customer
+            if (document.getElementById('trackingResults').style.display !== 'none') {
+                document.getElementById('customerConnectionStatus').style.display = 'block';
+            }
+        }
+
+        function startLiveLocationUpdates() {
+            // Clear existing interval
+            if (locationUpdateInterval) {
+                clearInterval(locationUpdateInterval);
+            }
+            
+            // Update location every 30 seconds
+            locationUpdateInterval = setInterval(() => {
+                if (navigator.geolocation && isLocationConnected) {
+                    navigator.geolocation.getCurrentPosition(
+                        function(position) {
+                            driverLocation = {
+                                lat: position.coords.latitude,
+                                lng: position.coords.longitude
+                            };
+                            
+                            // Update trip data
+                            if (currentTrip) {
+                                currentTrip.driverLocation = driverLocation;
+                                updateTripStorage();
+                            }
+                            
+                            // Update live distance
+                            updateLiveDistance();
+                        },
+                        function(error) {
+                            console.error('Live location update error:', error);
+                        },
+                        {
+                            enableHighAccuracy: true,
+                            timeout: 5000,
+                            maximumAge: 30000
+                        }
+                    );
+                }
+            }, 30000); // Update every 30 seconds
+        }
+
+        function copyToClipboard(text, successMessage) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert(successMessage);
+                }).catch(() => {
+                    fallbackCopyTextToClipboard(text, successMessage);
+                });
+            } else {
+                fallbackCopyTextToClipboard(text, successMessage);
+            }
+        }
+
+        function fallbackCopyTextToClipboard(text, successMessage) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.position = "fixed";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                alert(successMessage);
+            } catch (err) {
+                alert('Unable to copy to clipboard. Please copy manually.');
+            }
+            
+            document.body.removeChild(textArea);
+        }
+
+        // Tab switching functionality
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            
+            document.querySelectorAll('.nav-tab').forEach((tab, index) => {
+                if ((tabName === 'driver' && index === 0) || 
+                    (tabName === 'customer' && index === 1) || 
+                    (tabName === 'admin' && index === 2)) {
+                    tab.classList.add('active');
+                }
+            });
+        }
+
+        // Enhanced route calculation
+        function calculateRouteData(startPoint, destination) {
+            const routes = {
+                'mumbai-pune': { distance: 148, eta: 180 },
+                'mumbai-nashik': { distance: 165, eta: 210 },
+                'mumbai-delhi': { distance: 1154, eta: 1440 },
+                'mumbai-bangalore': { distance: 984, eta: 1200 },
+                'delhi-jaipur': { distance: 280, eta: 300 },
+                'delhi-agra': { distance: 233, eta: 270 },
+                'bangalore-chennai': { distance: 346, eta: 420 },
+                'bangalore-hyderabad': { distance: 569, eta: 720 },
+                'chennai-bangalore': { distance: 346, eta: 420 },
+                'pune-mumbai': { distance: 148, eta: 180 }
+            };
+            
+            function normalizeCity(city) {
+                return city.toLowerCase()
+                    .replace(/\s+/g, '')
+                    .replace(/(central|station|airport|junction|city|new|old|greater|metro)/g, '')
+                    .replace(/[^a-z]/g, '')
+                    .trim();
+            }
+            
+            const normalizedStart = normalizeCity(startPoint);
+            const normalizedDest = normalizeCity(destination);
+            
+            let routeKey = `${normalizedStart}-${normalizedDest}`;
+            let routeData = routes[routeKey];
+            
+            if (!routeData) {
+                routeKey = `${normalizedDest}-${normalizedStart}`;
+                routeData = routes[routeKey];
+            }
+            
+            if (routeData) {
+                return {
+                    distance: routeData.distance,
+                    eta: routeData.eta
+                };
+            }
+            
+            // Fallback calculation
+            const fallbackDistance = Math.max(50, Math.min(1200, 
+                (startPoint.length + destination.length) * 12 + 80
+            ));
+            
+            return {
+                distance: fallbackDistance,
+                eta: Math.round(fallbackDistance * 1.1)
+            };
+        }
+
+        // Driver Portal Functions
+        function startTrip() {
+            const driverName = document.getElementById('driverName').value.trim();
+            const vehicleNumber = document.getElementById('vehicleNumber').value.trim();
+            const startPoint = document.getElementById('startPoint').value.trim();
+            const destination = document.getElementById('destination').value.trim();
+            const customerContact = document.getElementById('customerContact').value.trim();
+
+            if (!driverName || !vehicleNumber || !startPoint || !destination || !customerContact) {
+                alert('Please fill in all fields before starting the trip');
+                return;
+            }
+
+            if (currentTrip) {
+                alert('A trip is already active. Please end the current trip first.');
+                return;
+            }
+
+            const trackingId = 'TRK' + Math.random().toString(36).substr(2, 6).toUpperCase();
+            const routeData = calculateRouteData(startPoint, destination);
+            
+            currentTrip = {
+                id: trackingId,
+                driver: driverName,
+                vehicle: vehicleNumber,
+                start: startPoint,
+                destination: destination,
+                customer: customerContact,
+                status: 'enroute',
+                startTime: new Date(),
+                distance: routeData.distance,
+                eta: routeData.eta,
+                driverLocation: driverLocation,
+                customerLocation: customerLocation
+            };
+
+            updateTripStorage();
+
+            document.getElementById('tripDetails').style.display = 'block';
+            document.getElementById('tripDistance').textContent = currentTrip.distance + ' km';
+            document.getElementById('tripETA').textContent = Math.floor(currentTrip.eta / 60) + 'h ' + (currentTrip.eta % 60) + 'm';
+            
+            const baseUrl = window.location.href.split('?')[0];
+            const trackingLink = `${baseUrl}?track=${trackingId}`;
+            document.getElementById('trackingLink').value = trackingLink;
+
+            initializeDriverMap();
+            startLocationTracking();
+
+            // If both locations are available, start live updates
+            if (driverLocation && customerLocation) {
+                isLocationConnected = true;
+                document.getElementById('connectionStatus').style.display = 'block';
+                updateLiveDistance();
+                startLiveLocationUpdates();
+            }
+
+            alert(`✅ Trip started successfully!\n\nTracking ID: ${trackingId}\n\n📍 Share location links for live tracking:\n• Driver location: Share with customer\n• Customer location: Get from customer`);
+        }
+
+        function updateTripStorage() {
+            if (!currentTrip) return;
+            
+            allTrips[currentTrip.id] = { ...currentTrip };
+            allTrips[currentTrip.id.toLowerCase()] = { ...currentTrip };
+            
+            window.localStorage.setItem('trip_' + currentTrip.id, JSON.stringify(currentTrip));
+            window.localStorage.setItem('trip_' + currentTrip.id.toLowerCase(), JSON.stringify(currentTrip));
+            window.localStorage.setItem(currentTrip.id, JSON.stringify(currentTrip));
+            window.localStorage.setItem(currentTrip.id.toLowerCase(), JSON.stringify(currentTrip));
+            window.localStorage.setItem('activeTrips', JSON.stringify(allTrips));
+            window.localStorage.setItem('currentActiveTrip', JSON.stringify(currentTrip));
+        }
+
+        function initializeDriverMap() {
+            const mapDiv = document.getElementById('driverMap');
+            
+            mapDiv.innerHTML = `
+                <div style="height: 100%; background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%); position: relative; border: 3px solid #667eea; border-radius: 12px; overflow: hidden;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px; z-index: 20;">
+                        <div style="text-align: center; font-weight: bold; font-size: clamp(0.9rem, 2.5vw, 1.1rem);">
+                            <i class="fas fa-route"></i> Live GPS Tracking - ${currentTrip.id}
+                        </div>
+                    </div>
+                    
+                    <div style="position: absolute; top: 45px; left: 10px; right: 10px; background: rgba(255,255,255,0.95); padding: 12px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); z-index: 15;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                            <div style="display: flex; align-items: center;">
+                                <div style="width: 12px; height: 12px; background: #4CAF50; border-radius: 50%; margin-right: 6px; box-shadow: 0 0 8px rgba(76,175,80,0.5);"></div>
+                                <div>
+                                    <strong style="color: #4CAF50; font-size: 0.8rem;">FROM</strong><br>
+                                    <span style="color: #333; font-size: 0.75rem;">${currentTrip.start}</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <div style="width: 12px; height: 12px; background: #F44336; border-radius: 50%; margin-right: 6px; box-shadow: 0 0 8px rgba(244,67,54,0.5);"></div>
+                                <div>
+                                    <strong style="color: #F44336; font-size: 0.8rem;">TO</strong><br>
+                                    <span style="color: #333; font-size: 0.75rem;">${currentTrip.destination}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="position: absolute; top: 120px; left: 15px; right: 15px; bottom: 60px; background: white; border-radius: 10px; box-shadow: inset 0 2px 8px rgba(0,0,0,0.1); overflow: hidden;">
+                        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.08; background-image: 
+                            linear-gradient(rgba(102,126,234,0.3) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(102,126,234,0.3) 1px, transparent 1px);
+                            background-size: 20px 20px;"></div>
+                        
+                        <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+                            <defs>
+                                <linearGradient id="routeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#4CAF50;stop-opacity:0.8" />
+                                    <stop offset="50%" style="stop-color:#2196F3;stop-opacity:0.8" />
+                                    <stop offset="100%" style="stop-color:#F44336;stop-opacity:0.8" />
+                                </linearGradient>
+                            </defs>
+                            
+                            <path d="M 30 50 Q 120 80 200 50 Q 280 30 320 50" 
+                                  stroke="url(#routeGradient)" 
+                                  stroke-width="4" 
+                                  fill="none" 
+                                  stroke-dasharray="10,6"/>
+                            
+                            <circle cx="30" cy="50" r="8" fill="#4CAF50" stroke="white" stroke-width="2">
+                                <animate attributeName="r" values="8;11;8" dur="2s" repeatCount="indefinite"/>
+                            </circle>
+                            
+                            <circle cx="320" cy="50" r="8" fill="#F44336" stroke="white" stroke-width="2">
+                                <animate attributeName="r" values="8;11;8" dur="2s" repeatCount="indefinite" begin="1s"/>
+                            </circle>
+                            
+                            <g id="movingTruck">
+                                <circle cx="60" cy="60" r="6" fill="#FF9800" stroke="white" stroke-width="2">
+                                    <animate attributeName="cx" values="30;60;120;180;240;280;320" dur="20s" repeatCount="indefinite"/>
+                                    <animate attributeName="cy" values="50;60;80;60;40;35;50" dur="20s" repeatCount="indefinite"/>
+                                </circle>
+                            </g>
+                        </svg>
+                    </div>
+                    
+                    <div style="position: absolute; bottom: 10px; left: 15px; right: 15px; background: rgba(255,255,255,0.95); padding: 8px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                        <div style="display: flex; align-items: center; justify-content: center;">
+                            <div style="width: 8px; height: 8px; background: #4CAF50; border-radius: 50%; margin-right: 6px; animation: pulse 2s infinite;"></div>
+                            <span style="font-weight: bold; color: #333; font-size: 0.8rem;" id="liveLocation">Live tracking active...</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function startLocationTracking() {
+            let locationIndex = 0;
+            const locations = [
+                `Starting from ${currentTrip.start}`,
+                `Exited ${currentTrip.start} - On route`,
+                `Midway to ${currentTrip.destination}`,
+                `Approaching ${currentTrip.destination}`,
+                `Reached ${currentTrip.destination}`
+            ];
+
+            trackingInterval = setInterval(() => {
+                if (locationIndex < locations.length) {
+                    const currentLocationElement = document.getElementById('currentLocation');
+                    const liveLocationElement = document.getElementById('liveLocation');
+                    
+                    if (currentLocationElement) {
+                        currentLocationElement.textContent = locations[locationIndex];
+                    }
+                    if (liveLocationElement) {
+                        liveLocationElement.textContent = locations[locationIndex];
+                    }
+                    
+                    locationIndex++;
+                } else {
+                    const currentLocationElement = document.getElementById('currentLocation');
+                    const liveLocationElement = document.getElementById('liveLocation');
+                    
+                    if (currentLocationElement) {
+                        currentLocationElement.textContent = `Arrived at ${currentTrip.destination}`;
+                    }
+                    if (liveLocationElement) {
+                        liveLocationElement.textContent = `Arrived at ${currentTrip.destination}`;
+                    }
+                }
+            }, 6000);
+        }
+
+        function updateStatus(status) {
+            if (!currentTrip) {
+                alert('No active trip found. Please start a trip first.');
+                return;
+            }
+
+            currentTrip.status = status;
+            currentTrip.lastUpdated = new Date();
+            
+            updateTripStorage();
+            
+            const step1 = document.getElementById('driverStep1');
+            const step2 = document.getElementById('driverStep2');
+            const step3 = document.getElementById('driverStep3');
+            const step4 = document.getElementById('driverStep4');
+            
+            [step1, step2, step3, step4].forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            if (status === 'reached') {
+                step1.classList.add('completed');
+                step2.classList.add('completed');
+                step3.classList.add('active', 'completed');
+                alert(`✅ Status updated: Reached destination\n\nCustomers can track this update using ID: ${currentTrip.id}`);
+            } else if (status === 'delivered') {
+                step1.classList.add('completed');
+                step2.classList.add('completed');
+                step3.classList.add('completed');
+                step4.classList.add('active', 'completed');
+                alert(`✅ Status updated: Delivered successfully\n\nTracking ID: ${currentTrip.id} is now marked as delivered`);
+                
+                if (trackingInterval) {
+                    clearInterval(trackingInterval);
+                }
+                if (locationUpdateInterval) {
+                    clearInterval(locationUpdateInterval);
+                }
+            }
+        }
+
+        function endTrip() {
+            if (trackingInterval) {
+                clearInterval(trackingInterval);
+            }
+            if (locationUpdateInterval) {
+                clearInterval(locationUpdateInterval);
+            }
+            
+            if (currentTrip) {
+                allTrips[currentTrip.id] = { ...currentTrip };
+                alert(`✅ Trip ended successfully!\n\nTracking ID: ${currentTrip.id} remains available for customer tracking.`);
+            }
+            
+            currentTrip = null;
+            isLocationConnected = false;
+            driverLocation = null;
+            customerLocation = null;
+            
+            document.getElementById('tripDetails').style.display = 'none';
+            document.getElementById('connectionStatus').style.display = 'none';
+            
+            // Reset form
+            ['driverName', 'vehicleNumber', 'startPoint', 'destination', 'customerContact', 'driverLocationLink', 'customerLocationLink'].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) element.value = '';
+            });
+        }
+
+        function copyTrackingLink() {
+            const linkInput = document.getElementById('trackingLink');
+            
+            if (!linkInput.value) {
+                alert('No tracking link available. Please start a trip first.');
+                return;
+            }
+            
+            copyToClipboard(linkInput.value, '✅ Tracking link copied to clipboard!');
+        }
+
+        // Customer Tracking Functions
+        function trackConsignment() {
+            const trackingId = document.getElementById('trackingId').value.trim().toUpperCase();
+            
+            if (!trackingId) {
+                alert('Please enter a tracking ID');
+                return;
+            }
+
+            if (trackingId.length < 6) {
+                alert('Please enter a valid tracking ID (minimum 6 characters)');
+                return;
+            }
+
+            let tripData = null;
+
+            // Enhanced search
+            if (currentTrip && currentTrip.id.toUpperCase() === trackingId) {
+                tripData = currentTrip;
+            }
+            
+            if (!tripData) {
+                for (let storedId in allTrips) {
+                    if (storedId.toUpperCase() === trackingId) {
+                        tripData = allTrips[storedId];
+                        break;
+                    }
+                }
+            }
+            
+            if (!tripData) {
+                try {
+                    const keys = [
+                        'trip_' + trackingId,
+                        'trip_' + trackingId.toLowerCase(),
+                        trackingId,
+                        trackingId.toLowerCase(),
+                        'currentActiveTrip'
+                    ];
+                    
+                    for (let key of keys) {
+                        const storedTrip = window.localStorage.getItem(key);
+                        if (storedTrip) {
+                            const parsedTrip = JSON.parse(storedTrip);
+                            if (parsedTrip.id && parsedTrip.id.toUpperCase() === trackingId) {
+                                tripData = parsedTrip;
+                                allTrips[trackingId] = tripData;
+                                break;
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error reading from localStorage:', e);
+                }
+            }
+            
+            if (!tripData) {
+                alert(`❌ Tracking ID "${trackingId}" not found.\n\n🔍 Please verify:\n✓ Tracking ID is correct\n✓ Trip has been started by driver\n✓ No typos in the ID`);
+                return;
+            }
+
+            // Show tracking results
+            document.getElementById('trackingResults').style.display = 'block';
+            
+            // Update customer info
+            document.getElementById('customerVehicle').textContent = tripData.vehicle;
+            document.getElementById('customerDriver').textContent = tripData.driver;
+            
+            let remainingETA = tripData.eta || 120;
+            if (tripData.status === 'reached') {
+                remainingETA = Math.floor(Math.random() * 30 + 10);
+            } else if (tripData.status === 'delivered') {
+                remainingETA = 0;
+            }
+            
+            document.getElementById('customerETA').textContent = remainingETA > 0 ? 
+                Math.floor(remainingETA / 60) + 'h ' + (remainingETA % 60) + 'm' : 'Delivered';
+            
+            // If trip has location data, show live connection
+            if (tripData.driverLocation && tripData.customerLocation) {
+                driverLocation = tripData.driverLocation;
+                customerLocation = tripData.customerLocation;
+                isLocationConnected = true;
+                document.getElementById('customerConnectionStatus').style.display = 'block';
+                updateLiveDistance();
+            }
+            
+            updateCustomerTimeline(tripData.status);
+            initializeCustomerMap(tripData);
+            updateCustomerNotifications(tripData);
+            
+            const statusText = tripData.status.charAt(0).toUpperCase() + tripData.status.slice(1);
+            alert(`✅ Tracking Active!\n\nID: ${trackingId}\nDriver: ${tripData.driver}\nVehicle: ${tripData.vehicle}\nRoute: ${tripData.start} → ${tripData.destination}\nStatus: ${statusText}\n\n${isLocationConnected ? '📍 Live location tracking active!' : '📍 Share location with driver for live tracking'}`);
+        }
+
+        function updateCustomerTimeline(status) {
+            const steps = document.querySelectorAll('#customer .status-step');
+            
+            steps.forEach(step => {
+                step.classList.remove('active', 'completed');
+            });
+            
+            if (status === 'started') {
+                steps[0].classList.add('completed');
+                steps[1].classList.add('active');
+            } else if (status === 'enroute') {
+                steps[0].classList.add('completed');
+                steps[1].classList.add('active', 'completed');
+                steps[2].classList.add('active');
+            } else if (status === 'reached') {
+                steps[0].classList.add('completed');
+                steps[1].classList.add('completed');
+                steps[2].classList.add('active', 'completed');
+                steps[3].classList.add('active');
+            } else if (status === 'delivered') {
+                steps[0].classList.add('completed');
+                steps[1].classList.add('completed');
+                steps[2].classList.add('completed');
+                steps[3].classList.add('completed');
+            }
+        }
+        
+        function updateCustomerNotifications(tripData) {
+            const notificationPanel = document.querySelector('.notification-panel');
+            const currentTime = new Date();
+            const timeStr = currentTime.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+            
+            let statusMessage = '';
+            if (tripData.status === 'started') {
+                statusMessage = `Driver ${tripData.driver} has started the journey from ${tripData.start}`;
+            } else if (tripData.status === 'enroute') {
+                statusMessage = isLocationConnected ? 
+                    `Your driver is currently ${document.getElementById('customerLiveDistance')?.textContent || 'tracking'} away` :
+                    `Your truck (${tripData.vehicle}) is currently en route to ${tripData.destination}`;
+            } else if (tripData.status === 'reached') {
+                statusMessage = `Driver has reached ${tripData.destination} and will deliver shortly`;
+            } else if (tripData.status === 'delivered') {
+                statusMessage = `Your consignment has been successfully delivered at ${tripData.destination}`;
+            }
+            
+            notificationPanel.innerHTML = `
+                <h3><i class="fas fa-bell"></i> Live Updates</h3>
+                <div class="notification">
+                    <strong>${timeStr}</strong> - ${statusMessage}
+                </div>
+                <div class="notification">
+                    <strong>${(new Date(currentTime.getTime() - 15*60000)).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</strong> - Driver ${tripData.driver} confirmed pickup from ${tripData.start}
+                </div>
+                <div class="notification">
+                    <strong>${(new Date(currentTime.getTime() - 30*60000)).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</strong> - Your consignment (${tripData.id}) has been loaded in vehicle ${tripData.vehicle}
+                </div>
+            `;
+        }
+
+        function initializeCustomerMap(tripData) {
+            const mapDiv = document.getElementById('customerMap');
+            
+            let statusText = 'Your Consignment is in Transit';
+            let statusColor = '#2196F3';
+            let statusIcon = 'fa-truck';
+            
+            if (tripData.status === 'delivered') {
+                statusText = 'Consignment Delivered Successfully';
+                statusColor = '#4CAF50';
+                statusIcon = 'fa-check-circle';
+            } else if (tripData.status === 'reached') {
+                statusText = 'Driver Reached - Delivery in Progress';
+                statusColor = '#FF9800';
+                statusIcon = 'fa-map-marker-alt';
+            }
+            
+            mapDiv.innerHTML = `
+                <div style="height: 100%; background: linear-gradient(135deg, #e8f5e8 0%, #e3f2fd 100%); position: relative; border: 3px solid #2196F3; border-radius: 12px; overflow: hidden;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%); color: white; padding: 10px; z-index: 20;">
+                        <div style="text-align: center; font-weight: bold; font-size: clamp(0.9rem, 2.5vw, 1.1rem);">
+                            <i class="fas fa-search-location"></i> Track Your Consignment - ${tripData.id}
+                        </div>
+                    </div>
+                    
+                    <div style="position: absolute; top: 45px; left: 10px; right: 10px; background: rgba(255,255,255,0.95); padding: 12px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); z-index: 15;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                            <div style="display: flex; align-items: center;">
+                                <div style="width: 12px; height: 12px; background: #4CAF50; border-radius: 50%; margin-right: 6px;"></div>
+                                <div>
+                                    <strong style="color: #4CAF50; font-size: 0.8rem;">PICKUP</strong><br>
+                                    <span style="color: #333; font-size: 0.75rem;">${tripData.start}</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <div style="width: 12px; height: 12px; background: #F44336; border-radius: 50%; margin-right: 6px;"></div>
+                                <div>
+                                    <strong style="color: #F44336; font-size: 0.8rem;">DELIVERY</strong><br>
+                                    <span style="color: #333; font-size: 0.75rem;">${tripData.destination}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="position: absolute; top: 120px; left: 15px; right: 15px; bottom: 60px; background: white; border-radius: 10px; overflow: hidden;">
+                        <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+                            <path d="M 40 60 Q 100 90 180 60 Q 260 30 300 60" 
+                                  stroke="#2196F3" 
+                                  stroke-width="4" 
+                                  fill="none" 
+                                  stroke-dasharray="8,5"/>
+                            
+                            <circle cx="40" cy="60" r="8" fill="#4CAF50" stroke="white" stroke-width="2"/>
+                            <circle cx="300" cy="60" r="8" fill="#F44336" stroke="white" stroke-width="2"/>
+                            
+                            <circle cx="120" cy="80" r="6" fill="${statusColor}" stroke="white" stroke-width="2">
+                                <animate attributeName="cx" values="40;120;180;240;280;300" dur="25s" repeatCount="indefinite"/>
+                                <animate attributeName="cy" values="60;80;60;40;50;60" dur="25s" repeatCount="indefinite"/>
+                            </circle>
+                        </svg>
+                        
+                        <div style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: rgba(${statusColor === '#4CAF50' ? '76,175,80' : statusColor === '#FF9800' ? '255,152,0' : '33,150,243'},0.9); color: white; padding: 6px 12px; border-radius: 15px; font-size: 0.8rem; font-weight: bold;">
+                            <i class="fas ${statusIcon}"></i> ${statusText}
+                        </div>
+                    </div>
+                    
+                    <div style="position: absolute; bottom: 10px; left: 15px; right: 15px; background: rgba(255,255,255,0.95); padding: 8px; border-radius: 8px;">
+                        <div style="display: flex; align-items: center; justify-content: center;">
+                            <div style="width: 8px; height: 8px; background: ${statusColor}; border-radius: 50%; margin-right: 6px; animation: pulse 2s infinite;"></div>
+                            <span style="font-weight: bold; color: #333; font-size: 0.8rem;">Live tracking active</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Admin Functions
+        function viewConsignmentDetails(consignmentId) {
+            alert(`📊 Viewing detailed information for: ${consignmentId}\n\n📍 Live Location Data:\n• GPS coordinates\n• Speed and direction\n• Route optimization\n• Customer proximity\n\n📞 Contact Information:\n• Driver: Direct call/message\n• Customer: Delivery updates\n\n⏱️ Timeline:\n• Pickup confirmation\n• Route progress\n• Delivery status`);
+        }
+
+        function exportReports() {
+            const csvContent = `Consignment ID,Driver,Vehicle,Route,Status,Live Distance,ETA
+TRK001,Rajesh Kumar,MH12AB1234,Mumbai → Pune,Live Connected,25 km,35 min
+TRK002,Suresh Patil,MH12CD5678,Delhi → Jaipur,Started,280 km,4h 30m
+TRK003,Amit Sharma,MH12EF9012,Bangalore → Chennai,Delivered,0 km,Completed`;
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'live_tracking_report.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            alert('✅ Live tracking report exported successfully!');
+        }
+
+        function sendBulkNotifications() {
+            alert('📱 Bulk notifications sent to all customers!\n\n✅ Sent to:\n• Active trip customers\n• Pending delivery customers\n• Location sharing reminders\n\n📊 Delivery rate: 98.5%');
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load existing data
+            try {
+                const storedActiveTrips = window.localStorage.getItem('activeTrips');
+                if (storedActiveTrips) {
+                    const trips = JSON.parse(storedActiveTrips);
+                    Object.assign(allTrips, trips);
+                }
+                
+                const storedCurrentTrip = window.localStorage.getItem('currentActiveTrip');
+                if (storedCurrentTrip) {
+                    const trip = JSON.parse(storedCurrentTrip);
+                    if (trip && trip.id) {
+                        currentTrip = trip;
+                        allTrips[trip.id] = trip;
+                        
+                        // Restore location data
+                        if (trip.driverLocation) {
+                            driverLocation = trip.driverLocation;
+                        }
+                        if (trip.customerLocation) {
+                            customerLocation = trip.customerLocation;
+                            isLocationConnected = true;
+                        }
+                        
+                        // Show trip details
+                        document.getElementById('tripDetails').style.display = 'block';
+                        document.getElementById('tripDistance').textContent = currentTrip.distance + ' km';
+                        document.getElementById('tripETA').textContent = Math.floor(currentTrip.eta / 60) + 'h ' + (currentTrip.eta % 60) + 'm';
+                        
+                        // Restore form data
+                        const fields = ['driverName', 'vehicleNumber', 'startPoint', 'destination', 'customerContact'];
+                        fields.forEach(field => {
+                            const element = document.getElementById(field);
+                            if (element && currentTrip[field.replace('driver', '').replace('vehicle', '').toLowerCase()]) {
+                                element.value = currentTrip[field.replace('driver', '').replace('vehicle', '').toLowerCase()] || '';
+                            }
+                        });
+                        
+                        // Generate tracking link
+                        const baseUrl = window.location.href.split('?')[0];
+                        const trackingLink = `${baseUrl}?track=${currentTrip.id}`;
+                        document.getElementById('trackingLink').value = trackingLink;
+                        
+                        // Show connection status if locations are available
+                        if (isLocationConnected) {
+                            document.getElementById('connectionStatus').style.display = 'block';
+                            updateLiveDistance();
+                            startLiveLocationUpdates();
+                        }
+                        
+                        initializeDriverMap();
+                        startLocationTracking();
+                    }
+                }
+            } catch (e) {
+                console.error('Error loading stored data:', e);
+            }
+            
+            // Check for tracking parameter in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const trackingId = urlParams.get('track');
+            
+            if (trackingId) {
+                showTab('customer');
+                
+                setTimeout(() => {
+                    const trackingInput = document.getElementById('trackingId');
+                    if (trackingInput) {
+                        trackingInput.value = trackingId.toUpperCase();
+                        
+                        setTimeout(() => {
+                            trackConsignment();
+                        }, 300);
+                    }
+                }, 100);
+            }
+        });
+
+        // Real-time updates
+        setInterval(() => {
+            if (currentTrip && currentTrip.status !== 'delivered') {
+                const etaElement = document.getElementById('tripETA');
+                if (etaElement && currentTrip.eta > 0) {
+                    currentTrip.eta -= 1;
+                    etaElement.textContent = Math.floor(currentTrip.eta / 60) + 'h ' + (currentTrip.eta % 60) + 'm';
+                }
+            }
+            
+            // Update live distance if connected
+            if (isLocationConnected && driverLocation && customerLocation) {
+                updateLiveDistance();
+            }
+        }, 60000);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97c67d43d4aaa75f',t:'MTc1NzQxODg1MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
